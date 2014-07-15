@@ -3,6 +3,7 @@
   var DEFAULTS = {
     container: '<div class="suggest"></div>',
     autoFocus: false,
+    align: 'bottom-left',
     widgetTemplate: function(lifecycle, items, term) {
       var out = '<ul>';
 
@@ -77,6 +78,7 @@
     this.focused = this.options.autoFocus ? 0 : -1;
 
     this.render('search');
+    positionContainer.call(this);
 
     if (this.options.source) {
       var bound = $.proxy(function(items) {
@@ -85,6 +87,7 @@
         this.items = items;
 
         this.render('response');
+        positionContainer.call(this);
       }, this);
 
       this.options.source(term, bound);
@@ -116,13 +119,33 @@
     return ev.isDefaultPrevented();
   };
 
+  // available options:
+  // bottom-left, bottom-center, bottom-right
+  // top-left, top-center, top-right
+  // left-top left-bottom left-middle
+  // right-top right-bottom right-middle
   var positionContainer = function() {
     var height = this.$element.outerHeight(),
         offset = this.$element.offset();
 
-    var top = offset.top + height,
+    var top = offset.top,
         left = offset.left,
-        width = this.$element.outerWidth();
+        width = this.$element.outerWidth(),
+        cWidth = this.$container.outerWidth(),
+        cHeight = this.$container.outerHeight();
+
+    var align = this.options.align.split('-');
+
+    if (align[0] === 'bottom') top += height;
+    if (align[0] === 'top')    top -= cHeight;
+    if (align[0] === 'left')   left -= cWidth;
+    if (align[0] === 'right')  left += width;
+
+    if (align[1] === 'center') left += width / 2 - cWidth / 2;
+    if (align[1] === 'right')  left += width - cWidth;
+
+    if (align[1] === 'top')    top -= cHeight - height;
+    if (align[1] === 'middle') top -= cHeight / 2 - height / 2;
 
     this.$container.css({left: left, top: top, minWidth: width});
   };
