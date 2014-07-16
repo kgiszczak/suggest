@@ -107,6 +107,10 @@
     return $item[0].outerHTML;
   };
 
+  Suggest.prototype.setOptions = function(options) {
+    this.options = $.extend({}, this.options, options);
+  };
+
   // SUGGEST PRIVATE FUNCTIONS DEFINITION
   // ====================================
 
