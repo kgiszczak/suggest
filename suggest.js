@@ -236,9 +236,21 @@
           data    = $this.data('suggest'),
           options = $.extend({}, DEFAULTS, typeof option === 'object' && option);
 
-      if (!data) $this.data('suggest', (data = new Suggest(this, options)));
+      if (!data) {
+        $this
+          .data('suggest', (data = new Suggest(this, options)))
+          .attr('data-suggest-instance', '');
+      }
       if (typeof option === 'string') data[option](val);
     });
+  };
+
+  // expose helper functions
+  $.suggest = {
+    setDefaults: function(options) {
+      $.extend(DEFAULTS, options);
+      $('[data-suggest-instance]').suggest('setOptions', options);
+    }
   };
 
 })(window.jQuery);
