@@ -3,7 +3,7 @@
   var DEFAULTS = {
     container: '<div class="suggest"></div>',
     autoFocus: false,
-    align: 'bottom-left',
+    align: 'bottom-center',
     widgetTemplate: function(lifecycle, items, term) {
       var out = '<ul>';
 
