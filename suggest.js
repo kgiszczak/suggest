@@ -21,11 +21,11 @@
     }
   };
 
-  var ARRAY_SEARCH_FUNCTION = function(term, callback) {
+  var ARRAY_SEARCH_FUNCTION = function(term, response) {
     var items = this.originalSource.filter(function(el) {
       return (el.value || el.label || el).match(new RegExp(term, 'i'));
     });
-    callback(items);
+    response(items);
   };
 
   // SUGGEST CLASS DEFINITION
