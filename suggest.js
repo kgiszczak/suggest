@@ -16,12 +16,15 @@
       return out;
     },
     itemTemplate: function(item, term, focused) {
-      return '<li' + (focused ? ' class="focused"' : '') + '>' + item + '</li>';
+      return '<li' + (focused ? ' class="focused"' : '') + '>' +
+        (item.label || item.value || item) + '</li>';
     }
   };
 
   var ARRAY_SEARCH_FUNCTION = function(term, callback) {
-    var items = this.originalSource.filter(function(el) { return el.match(term); });
+    var items = this.originalSource.filter(function(el) {
+      return (el.value || el.label || el).match(new RegExp(term, 'i'));
+    });
     callback(items);
   };
 
