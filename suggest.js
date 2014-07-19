@@ -4,6 +4,7 @@
     container: '<div class="suggest"></div>',
     autoFocus: false,
     align: 'bottom-left',
+    disabled: false,
     widgetTemplate: function(lifecycle, items, term) {
       var out = '<ul>';
 
@@ -54,6 +55,7 @@
   };
 
   Suggest.prototype.show = function() {
+    if (this.options.disabled) return;
     if (this.shown) return;
 
     if (triggerEvent.call(this, 'show.suggest')) return;
@@ -66,6 +68,7 @@
   };
 
   Suggest.prototype.hide = function() {
+    if (this.options.disabled) return;
     if (!this.shown) return;
 
     if (triggerEvent.call(this, 'hide.suggest')) return;
@@ -75,6 +78,7 @@
   };
 
   Suggest.prototype.search = function(term) {
+    if (this.options.disabled) return;
     if (triggerEvent.call(this, 'search.suggest', {term: term})) return;
 
     this.term = term;
@@ -112,6 +116,14 @@
 
   Suggest.prototype.setOptions = function(options) {
     this.options = $.extend({}, this.options, options);
+  };
+
+  Suggest.prototype.disable = function() {
+    this.setOptions({disabled: true});
+  };
+
+  Suggest.prototype.enable = function() {
+    this.setOptions({disabled: false});
   };
 
   // SUGGEST PRIVATE FUNCTIONS DEFINITION
@@ -175,6 +187,7 @@
   };
 
   var keydown = function(e) {
+    if (this.options.disabled) return;
     if (!this.shown) return;
 
     var change = null;
@@ -206,12 +219,16 @@
   };
 
   var mousemove = function(e) {
+    if (this.options.disabled) return;
+
     var $target = $(e.target);
     var idx = $target.data('item-index');
     if (idx !== this.focused) focusItem.call(this, idx);
   };
 
   var mouseclick = function(e) {
+    if (this.options.disabled) return;
+
     var $target = $(e.target);
     var idx = $target.data('item-index');
     selectItem.call(this, idx);
