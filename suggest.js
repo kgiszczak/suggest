@@ -24,7 +24,7 @@
 
   var ARRAY_SEARCH_FUNCTION = function(term, response) {
     var items = this.originalSource.filter(function(el) {
-      return (el.value || el.label || el).match(new RegExp(term, 'i'));
+      return (el.label || el.value || el).match(new RegExp(term, 'i'));
     });
     response(items);
   };
