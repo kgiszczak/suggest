@@ -34,7 +34,7 @@
 
   var Suggest = function(element, options) {
     this.$element = $(element);
-    this.options = options;
+    this.options = $.extend({}, DEFAULTS, options);
 
     if ($.isArray(this.options.source)) {
       this.originalSource = this.options.source;
