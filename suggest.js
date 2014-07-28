@@ -252,13 +252,12 @@
 
   $.fn.suggest = function(option, val) {
     return this.each(function() {
-      var $this   = $(this),
-          data    = $this.data('suggest'),
-          options = $.extend({}, DEFAULTS, typeof option === 'object' && option);
+      var $this = $(this),
+          data  = $this.data('suggest.instance');
 
       if (!data) {
         $this
-          .data('suggest', (data = new Suggest(this, options)))
+          .data('suggest.instance', (data = new Suggest(this, typeof option === 'object' && option)))
           .attr('data-suggest-instance', '');
       }
       if (typeof option === 'string') data[option](val);
