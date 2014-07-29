@@ -89,7 +89,7 @@
 
     if (this.options.source) {
       var bound = $.proxy(function(items) {
-        if (triggerEvent.call(this, 'response.suggest', {items: items})) return;
+        if (triggerEvent.call(this, 'response.suggest', {term: term, items: items})) return;
 
         this.items = items;
 
@@ -129,13 +129,10 @@
   // SUGGEST PRIVATE FUNCTIONS DEFINITION
   // ====================================
 
-  var triggerEvent = function(eventName) {
-    var args = Array.prototype.slice.call(arguments);
-    var evArgs = [this].concat(args.slice(1));
-
-    var ev = $.Event(eventName);
-    this.$element.trigger(ev, evArgs);
-    return ev.isDefaultPrevented();
+  var triggerEvent = function(name, params) {
+    var e = $.Event(name, params);
+    this.$element.trigger(e);
+    return e.isDefaultPrevented();
   };
 
   // available options:
@@ -235,7 +232,8 @@
   };
 
   var focusItem = function(idx) {
-    if (triggerEvent.call(this, 'itemfocus.suggest', this.focused, idx)) return;
+    var params = {item: this.items[idx], index: idx, prevIndex: this.focused};
+    if (triggerEvent.call(this, 'focusItem.suggest', params)) return;
     this.focused = idx;
 
     this.render('focus');
@@ -244,7 +242,7 @@
 
   var selectItem = function(idx) {
     if (idx === -1) return;
-    if (triggerEvent.call(this, 'itemselect.suggest', idx)) return;
+    if (triggerEvent.call(this, 'selectItem.suggest', {item: this.items[idx], index: idx})) return;
   }
 
   // SUGGEST PLUGIN DEFINITION
