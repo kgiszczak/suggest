@@ -101,6 +101,10 @@
     }
   };
 
+  Suggest.prototype.instance = function() {
+    return this;
+  };
+
   Suggest.prototype.render = function(lifecycle) {
     var widget = this.options.widgetTemplate.call(this, lifecycle, this.items, this.term);
     this.$container.html(widget);
@@ -249,6 +253,13 @@
   // =========================
 
   $.fn.suggest = function(option, val) {
+    if (option === 'instance') {
+      this.suggest();
+      var data = this.data('suggest.instance');
+
+      return data[option](val);
+    }
+
     return this.each(function() {
       var $this = $(this),
           data  = $this.data('suggest.instance');
