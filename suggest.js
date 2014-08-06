@@ -373,6 +373,7 @@
 
   // expose helper functions
   $.suggest = {
+    Constructor: Suggest,
     setDefaults: function(options) {
       $.extend(DEFAULTS, options);
       $('[data-suggest-instance]').suggest('setOptions', options);
