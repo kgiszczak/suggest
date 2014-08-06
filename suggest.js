@@ -1,10 +1,13 @@
 (function($) {
 
   var DEFAULTS = {
+    mode: 'auto',
     container: '<div class="suggest"></div>',
     autoFocus: false,
     align: 'bottom-left',
     disabled: false,
+    delay: 300,
+    minLength: 1,
     widgetTemplate: function(lifecycle, items, term) {
       var out = '<ul>';
 
@@ -52,6 +55,19 @@
       .on('mousemove', '[data-item-index]', $.proxy(mousemove, this))
       .on('click', '[data-item-index]', $.proxy(mouseclick, this))
       .on('mousedown', $.proxy(function(e) { e.preventDefault(); }, this));
+
+    // auto mode handlers
+    if (this.options.mode === 'auto') {
+      this.term = null;
+
+      this.$element
+        .on('focus', $.proxy(focusAutoHandler, this))
+        .on('blur', $.proxy(blurAutoHandler, this))
+        .on('keydown', $.proxy(keydownAutoHandler, this))
+        .on('response.suggest', $.proxy(responseAutoHandler, this))
+        .on('focusItem.suggest', $.proxy(focusItemAutoHandler, this))
+        .on('selectItem.suggest', $.proxy(selectItemAutoHandler, this));
+    }
   };
 
   Suggest.prototype.show = function() {
@@ -248,6 +264,88 @@
     if (idx === -1) return;
     if (triggerEvent.call(this, 'selectItem.suggest', {item: this.items[idx], index: idx})) return;
   }
+
+  // AUTO MODE
+  // =========
+
+  var focusAutoHandler = function() {
+    this.term = null;
+  };
+
+  var blurAutoHandler = function() {
+    this.hide();
+  };
+
+  var keydownAutoHandler = function(e) {
+    if (e.which === 13) return;
+
+    if (e.which === 9) {
+      e.item = this.items[this.focused];
+      e.index = this.focused;
+      if (this.shown && this.focused !== -1) selectItemAutoHandler.call(this, e);
+      return;
+    }
+
+    if (e.which === 27) {
+      this.term = null;
+      this.hide();
+      return;
+    }
+
+    if ((e.which === 38 || e.which === 40) && this.term !== null) {
+      return;
+    }
+
+    var bound = $.proxy(function() {
+      var val = this.$element.val();
+
+      if (this.term !== val) {
+        if (val.length >= this.options.minLength) {
+          this.search(val);
+        } else {
+          this.hide();
+        }
+
+        this.term = val;
+      }
+    }, this);
+
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(bound, this.options.delay);
+  };
+
+  var responseAutoHandler = function(e) {
+    var val = this.$element.val();
+
+    if (val.length >= this.options.minLength && e.items.length > 0 && this.$element.is(':focus')) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  };
+
+  var focusItemAutoHandler = function(e) {
+    var params = {item: e.item, prevIndex: e.prevIndex, index: e.index};
+    if (triggerEvent.call(this, 'focusedItem.suggest', params)) return;
+
+    var item = e.item;
+
+    if (item) {
+      this.$element.val(item.label || item.value || item);
+    } else {
+      this.$element.val(this.term);
+    }
+  };
+
+  var selectItemAutoHandler = function(e) {
+    this.term = null;
+    this.hide();
+
+    var item = e.item;
+    if (triggerEvent.call(this, 'selectedItem.suggest', {item: item, index: e.index})) return;
+
+    this.$element.val(item.label || item.value || item);
+  };
 
   // SUGGEST PLUGIN DEFINITION
   // =========================
