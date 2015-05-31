@@ -49,6 +49,7 @@
     this.shown = false;
 
     this.$container = $(this.options.container);
+    this.$container.addClass(this.options.target ? 'suggest-inline' : 'suggest-popover');
 
     this.$element.on('keydown', $.proxy(keydown, this));
     this.$container
@@ -77,8 +78,12 @@
     if (triggerEvent.call(this, 'show.suggest')) return;
 
     this.render('show');
-    $(document.body).append(this.$container);
-    positionContainer.call(this);
+    if (this.options.target) {
+      $(this.options.target).append(this.$container);
+    } else {
+      $(document.body).append(this.$container);
+      positionContainer.call(this);
+    }
 
     this.shown = true;
   };
@@ -101,7 +106,7 @@
     this.focused = this.options.autoFocus ? 0 : -1;
 
     this.render('search');
-    positionContainer.call(this);
+    if (!this.options.target) positionContainer.call(this);
 
     if (this.options.source) {
       var bound = $.proxy(function(items) {
@@ -110,7 +115,7 @@
         this.items = items;
 
         this.render('response');
-        positionContainer.call(this);
+        if (!this.options.target) positionContainer.call(this);
       }, this);
 
       this.options.source(term, bound);
