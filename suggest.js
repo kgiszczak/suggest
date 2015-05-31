@@ -191,7 +191,9 @@
 
     if ($item.length === 0) return;
 
-    var itemTop = $item.position().top,
+    var borderTop = parseFloat(this.$container.css('border-top-width'), 10),
+        containerTop = this.$container.offset().top + borderTop,
+        itemTop = $item.offset().top - containerTop,
         itemHeight = $item.outerHeight(),
         scroll = this.$container.scrollTop();
         containerHeight = this.$container.height();
