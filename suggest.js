@@ -4,6 +4,7 @@
     mode: 'auto',
     container: '<div class="suggest"></div>',
     autoFocus: false,
+    selectOnTab: true,
     align: 'bottom-left',
     disabled: false,
     delay: 300,
@@ -286,7 +287,7 @@
   var keydownAutoHandler = function(e) {
     if (e.which === 13) return;
 
-    if (e.which === 9) {
+    if (e.which === 9 && this.options.selectOnTab) {
       e.item = this.items[this.focused];
       e.index = this.focused;
       if (this.shown && this.focused !== -1) selectItemAutoHandler.call(this, e);
